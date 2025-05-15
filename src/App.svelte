@@ -236,22 +236,16 @@ function startGame() {
 	requestAnimationFrame(updatePosition);
 }
 
-	onMount(() => {
-		window.addEventListener("keydown", (e) => {
-			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
-		});
-		window.addEventListener("keyup", (e) => {
-			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
-		});
-
-		onMount(() => {
+onMount(() => {
 	scaleGame();
 	window.addEventListener('resize', scaleGame);
 });
 
 function scaleGame() {
-	const game = document.querySelector('.fixed-resolution-wrapper') as HTMLElement;
-	const wrapper = document.querySelector('.scaled-wrapper') as HTMLElement;
+	const game = document.querySelector('.fixed-resolution-wrapper');
+	const wrapper = document.querySelector('.scaled-wrapper');
+
+	if (!(game instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
 
 	const scaleX = window.innerWidth / 1280;
 	const scaleY = window.innerHeight / 720;
@@ -259,6 +253,15 @@ function scaleGame() {
 
 	game.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
+
+	onMount(() => {
+		window.addEventListener("keydown", (e) => {
+			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
+		});
+		window.addEventListener("keyup", (e) => {
+			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
+		});
+		
 	});
 
 		let rockSetups = Array.from({ length: 6 }, () => ({
