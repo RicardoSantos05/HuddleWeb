@@ -29,10 +29,13 @@
 
 	let seals = [];
 	let sealSpeed = 6;
+	let sealInterval: ReturnType<typeof setInterval>;
 
 	let showStartScreen = true;
+	let gameStarted = false;
 
 	 import { onMount } from 'svelte';
+
   let joystickX = 0;
   let joystickY = 0;
   let isDragging = false;
@@ -81,8 +84,16 @@ function startGame() {
 		return;
 	}
 	showStartScreen = false;
+	gameStarted = true;
+
+	// Iniciar o movimento e a lógica do jogo só aqui!
 	setTimeout(spawnFish, 3000);
 	updatePosition();
+
+	// Iniciar o spawn das focas
+	sealInterval = setInterval(() => {
+		if (!gameOver) spawnSeal();
+	}, 3000);
 }
 
 	function spawnFish() {
@@ -232,14 +243,6 @@ function startGame() {
 		window.addEventListener("keyup", (e) => {
 			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
 		});
-
-		const sealInterval = setInterval(() => {
-			if (!gameOver) spawnSeal();
-		}, 3000);
-
-		updatePosition();
-
-		setTimeout(spawnFish, 3000);
 	});
 
 		let rockSetups = Array.from({ length: 6 }, () => ({
