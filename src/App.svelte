@@ -243,6 +243,22 @@ function startGame() {
 		window.addEventListener("keyup", (e) => {
 			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
 		});
+
+		onMount(() => {
+	scaleGame();
+	window.addEventListener('resize', scaleGame);
+});
+
+function scaleGame() {
+	const game = document.querySelector('.fixed-resolution-wrapper') as HTMLElement;
+	const wrapper = document.querySelector('.scaled-wrapper') as HTMLElement;
+
+	const scaleX = window.innerWidth / 1280;
+	const scaleY = window.innerHeight / 720;
+	const scale = Math.min(scaleX, scaleY);
+
+	game.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
 	});
 
 		let rockSetups = Array.from({ length: 6 }, () => ({
@@ -297,6 +313,28 @@ function startGame() {
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
+}
+
+.fixed-resolution-wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 1280px;
+	height: 720px;
+	overflow: hidden;
+}
+
+.scaled-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: black; /* barras pretas */
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .hidden {
@@ -620,6 +658,14 @@ function startGame() {
 		style="position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; background: white; border-radius: 50%; transform: translate({joystickX}px, {joystickY}px); transition: transform 0.05s;">
 	</div>
 </div>
+</div>
+
+<div class="scaled-wrapper">
+	<div class="fixed-resolution-wrapper">
+		<div class="world">
+			<!-- tudo o resto do jogo aqui dentro -->
+		</div>
+	</div>
 </div>
 
 {#if showStartScreen}
