@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	let x = 300;
@@ -30,6 +29,47 @@
 
 	let seals = [];
 	let sealSpeed = 6;
+
+	let showStartScreen = true;
+
+	 import { onMount } from 'svelte';
+  let joystickX = 0;
+  let joystickY = 0;
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  function handleTouchStart(event) {
+    isDragging = true;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+  }
+
+  function handleTouchMove(event) {
+    if (!isDragging) return;
+    const touch = event.touches[0];
+    joystickX = touch.clientX - startX;
+    joystickY = touch.clientY - startY;
+  }
+
+  function handleTouchEnd() {
+    isDragging = false;
+    joystickX = 0;
+    joystickY = 0;
+  }
+
+	function startGame() {
+		showStartScreen = false;
+		setTimeout(spawnFish, 3000);
+		updatePosition();
+	}
+
+	function touchControl(direction: string, isPressed: boolean) {
+	if (direction in keys) {
+		keys[direction] = isPressed;
+	}
+}
 
 	function spawnFish() {
 		fishX = Math.random() * (window.innerWidth - 64);
@@ -112,51 +152,54 @@
 
 
 	function updatePosition() {
+	// Se estiver a usar o joystick, converte os valores para aceleração
+	if (isDragging) {
+		const normalizedX = joystickX / 40; // 40 é o limite do stick
+		const normalizedY = joystickY / 40;
+		ax = normalizedX * speed;
+		ay = normalizedY * speed;
+	} else {
 		ax = 0;
 		ay = 0;
 		if (keys.w) ay = -speed;
 		if (keys.s) ay = speed;
 		if (keys.a) ax = -speed;
 		if (keys.d) ax = speed;
+	}
 
-		vx += ax;
-		vy += ay;
+	vx += ax;
+	vy += ay;
 
-		// Limita velocidade
-		vx = Math.max(-maxSpeed, Math.min(maxSpeed, vx));
-		vy = Math.max(-maxSpeed, Math.min(maxSpeed, vy));
+	// Limita velocidade
+	vx = Math.max(-maxSpeed, Math.min(maxSpeed, vx));
+	vy = Math.max(-maxSpeed, Math.min(maxSpeed, vy));
 
-		// Aplica drag
-		vx *= drag;
-		vy *= drag;
+	// Aplica drag
+	vx *= drag;
+	vy *= drag;
 
-		x += vx;
-		y += vy;
+	x += vx;
+	y += vy;
 
-		const penguinWidth = 100;
-		const penguinHeight = 100;
+	const penguinWidth = 100;
+	const penguinHeight = 100;
 
-		x = Math.max(0, Math.min(window.innerWidth - penguinWidth, x));
-		y = Math.max(0, Math.min(window.innerHeight - penguinHeight, y));
+	x = Math.max(0, Math.min(window.innerWidth - penguinWidth, x));
+	y = Math.max(0, Math.min(window.innerHeight - penguinHeight, y));
 
-		// Atualiza direção do pinguim
-		if (vx < -0.5) facingLeft = true;
-		else if (vx > 0.5) facingLeft = false;
+	// Atualiza direção do pinguim
+	if (vx < -0.5) facingLeft = true;
+	else if (vx > 0.5) facingLeft = false;
 
-		// Atualiza a rotação suavemente apenas se o pinguim estiver em movimento
-
-		if (!gameOver) {
-	checkCollision();
-	checkSealCollision();
-}
+	if (!gameOver) {
 		checkCollision();
+		checkSealCollision();
+	}
 
-
-			// Movimento automático da foca
+	// Movimento das focas
 	for (let i = seals.length - 1; i >= 0; i--) {
 		seals[i].x += seals[i].speed * seals[i].direction;
 
-		// Remove se sair completamente do ecrã
 		if (
 			(seals[i].direction === 1 && seals[i].x > window.innerWidth + 200) ||
 			(seals[i].direction === -1 && seals[i].x < -200)
@@ -165,9 +208,8 @@
 		}
 	}
 
-
-		requestAnimationFrame(updatePosition);
-	}
+	requestAnimationFrame(updatePosition);
+}
 
 	onMount(() => {
 		window.addEventListener("keydown", (e) => {
@@ -422,9 +464,86 @@
 		0% { transform: rotate(3deg); }
 		100% { transform: rotate(-3deg); }
 	}
+
+	@media screen and (orientation: portrait) {
+	.rotate-warning {
+		display: flex;
+	}
+	.world {
+		display: none;
+	}
+}
+
+.rotate-warning {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #001e2d;
+	color: white;
+	font-size: 2em;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	padding: 40px;
+	z-index: 2000;
+	display: none;
+}
+
+ .joystick-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(100, 100, 100, 0.3);
+    border-radius: 50%;
+    touch-action: none;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  .joystick-thumb {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
 </style>
 
 <div class="world">
+
+	<div class="rotate-warning">
+	Por favor, rode o dispositivo na horizontal para jogar!
+
+	<div
+	id="joystick-base"
+	on:touchstart|passive={handleTouchStart}
+	on:touchmove|passive={handleTouchMove}
+	on:touchend={handleTouchEnd}
+	style="position: fixed; bottom: 80px; left: 80px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; touch-action: none; z-index: 999;">
+	<div
+	
+  class="joystick-container"
+  on:touchstart={handleTouchStart}
+  on:touchmove={handleTouchMove}
+  on:touchend={handleTouchEnd}
+>
+  <div
+    class="joystick-thumb"
+    style="left: calc(50% + {joystickX}px); top: calc(50% + {joystickY}px);"
+  />
+</div>
+		style="position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; background: white; border-radius: 50%; transform: translate({joystickX}px, {joystickY}px); transition: transform 0.05s;">
+	</div>
+</div>
+</div>
+
+
 
 <!-- Ecrã final -->
 {#if showEndScreen}
@@ -532,4 +651,3 @@
 
 	<!-- Contador -->
 	<div class="counter">Peixes: {caughtCount}</div>
-</div>
