@@ -39,6 +39,21 @@
   let startX = 0;
   let startY = 0;
 
+let isPortrait = false;
+let isMobile = false;
+
+onMount(() => {
+	isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+});
+
+function checkOrientation() {
+	isPortrait = window.innerHeight > window.innerWidth;
+}
+onMount(() => {
+	checkOrientation();
+	window.addEventListener("resize", checkOrientation);
+});
+
   function handleTouchStart(event) {
     isDragging = true;
     const touch = event.touches[0];
@@ -59,17 +74,17 @@
     joystickY = 0;
   }
 
-	function startGame() {
-		showStartScreen = false;
-		setTimeout(spawnFish, 3000);
-		updatePosition();
+function startGame() {
+	const isLandscape = window.innerWidth > window.innerHeight;
+	if (!isLandscape) {
+		alert("Roda o telemóvel para horizontal para jogar!");
+		return;
 	}
-
-function touchControl(direction, isPressed) {
-  if (direction in keys) {
-    keys[direction] = isPressed;
-  }
+	showStartScreen = false;
+	setTimeout(spawnFish, 3000);
+	updatePosition();
 }
+
 	function spawnFish() {
 		fishX = Math.random() * (window.innerWidth - 64);
 		fishY = Math.random() * (window.innerHeight - 64);
@@ -287,6 +302,23 @@ function touchControl(direction, isPressed) {
 	transition: opacity 0.3s ease;
 }
 
+.portrait-warning {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: #000;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5em;
+	z-index: 9999;
+	text-align: center;
+	padding: 20px;
+}
+
 .endscreen {
 	position: fixed;
 	top: 50%;
@@ -490,6 +522,17 @@ function touchControl(direction, isPressed) {
 	display: none;
 }
 
+.joystick {
+	width: 80px;
+	height: 80px;
+	background: rgba(255, 255, 255, 0.2);
+	border: 2px solid white;
+	border-radius: 50%;
+	position: fixed;
+	z-index: 1000;
+	touch-action: none;
+}
+
  .joystick-container {
     position: fixed;
     bottom: 20px;
@@ -542,7 +585,26 @@ function touchControl(direction, isPressed) {
 </div>
 </div>
 
+{#if showStartScreen}
+	<div class="startscreen">
+		<h1>Huddle</h1>
+		<button on:click={startGame}>Começar</button>
+	</div>
+{/if}
 
+{#if isPortrait}
+	<div class="portrait-warning">
+		Por favor, roda o dispositivo para horizontal para jogar.
+	</div>
+{/if}
+
+<div
+	class="joystick"
+	on:touchstart|passive={handleTouchStart}
+	on:touchmove|passive={handleTouchMove}
+	on:touchend={handleTouchEnd}
+	style="left: 80px; bottom: 80px;"
+></div>
 
 <!-- Ecrã final -->
 {#if showEndScreen}
@@ -586,6 +648,10 @@ function touchControl(direction, isPressed) {
 			"
 		></div>
 	{/each}
+
+{#if isMobile && !isPortrait && !showStartScreen}
+	<div class="joystick" ></div>
+{/if}
 
 	<!-- Algas -->
 	{#each algaeSetups as algae}
