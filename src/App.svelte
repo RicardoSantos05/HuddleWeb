@@ -29,7 +29,7 @@
 
 	let seals = [];
 	let sealSpeed = 6;
-	let sealInterval: ReturnType<typeof setInterval>;
+	let sealInterval;
 
 	let showStartScreen = true;
 	let gameStarted = false;
