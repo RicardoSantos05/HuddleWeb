@@ -505,6 +505,40 @@ function startGame() {
 	}
 }
 
+.start-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	z-index: 1000;
+	color: white;
+	font-size: 1.5em;
+	text-align: center;
+}
+
+.start-screen button {
+	padding: 20px 40px;
+	font-size: 1.5em;
+	cursor: pointer;
+	background-color: #fff;
+	color: #000;
+	border: none;
+	border-radius: 12px;
+	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+	transition: transform 0.2s, background 0.3s;
+}
+
+.start-screen button:hover {
+	transform: scale(1.05);
+	background-color: #ddd;
+}
+
 .rotate-warning {
 	position: fixed;
 	top: 0;
@@ -586,9 +620,12 @@ function startGame() {
 </div>
 
 {#if showStartScreen}
-	<div class="startscreen">
-		<h1>Huddle</h1>
-		<button on:click={startGame}>Começar</button>
+	<div class="start-screen">
+		{#if !isPortrait}
+			<button on:click={startGame}>START</button>
+		{:else}
+			<p>Roda o telemóvel para começar!</p>
+		{/if}
 	</div>
 {/if}
 
