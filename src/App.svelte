@@ -65,12 +65,11 @@
 		updatePosition();
 	}
 
-	function touchControl(direction: string, isPressed: boolean) {
-	if (direction in keys) {
-		keys[direction] = isPressed;
-	}
+function touchControl(direction, isPressed) {
+  if (direction in keys) {
+    keys[direction] = isPressed;
+  }
 }
-
 	function spawnFish() {
 		fishX = Math.random() * (window.innerWidth - 64);
 		fishY = Math.random() * (window.innerHeight - 64);
@@ -527,7 +526,7 @@
 	on:touchend={handleTouchEnd}
 	style="position: fixed; bottom: 80px; left: 80px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; touch-action: none; z-index: 999;">
 	<div
-	
+
   class="joystick-container"
   on:touchstart={handleTouchStart}
   on:touchmove={handleTouchMove}
