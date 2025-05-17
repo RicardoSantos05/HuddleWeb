@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 
 	let x = 300;
 	let y = 300;
@@ -34,67 +35,71 @@
 	let showStartScreen = true;
 	let gameStarted = false;
 
-	 import { onMount } from 'svelte';
+	let joystickX = 0;
+	let joystickY = 0;
+	let isDragging = false;
+	let startX = 0;
+	let startY = 0;
 
-  let joystickX = 0;
-  let joystickY = 0;
-  let isDragging = false;
-  let startX = 0;
-  let startY = 0;
+	let isPortrait = false;
+	let isMobile = false;
 
-let isPortrait = false;
-let isMobile = false;
+	onMount(() => {
+		isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+		checkOrientation();
+		window.addEventListener("resize", checkOrientation);
+		window.addEventListener("keydown", (e) => {
+			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
+		});
+		window.addEventListener("keyup", (e) => {
+			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
+		});
+		scaleGame();
+		window.addEventListener('resize', scaleGame);
+	});
 
-onMount(() => {
-	isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-});
+	function checkOrientation() {
+		isPortrait = window.innerHeight > window.innerWidth;
+			scaleGame();
 
-function checkOrientation() {
-	isPortrait = window.innerHeight > window.innerWidth;
-}
-onMount(() => {
-	checkOrientation();
-	window.addEventListener("resize", checkOrientation);
-});
-
-  function handleTouchStart(event) {
-    isDragging = true;
-    const touch = event.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-  }
-
-  function handleTouchMove(event) {
-    if (!isDragging) return;
-    const touch = event.touches[0];
-    joystickX = touch.clientX - startX;
-    joystickY = touch.clientY - startY;
-  }
-
-  function handleTouchEnd() {
-    isDragging = false;
-    joystickX = 0;
-    joystickY = 0;
-  }
-
-function startGame() {
-	const isLandscape = window.innerWidth > window.innerHeight;
-	if (!isLandscape) {
-		alert("Roda o telemóvel para horizontal para jogar!");
-		return;
 	}
-	showStartScreen = false;
-	gameStarted = true;
 
-	// Iniciar o movimento e a lógica do jogo só aqui!
-	setTimeout(spawnFish, 3000);
-	updatePosition();
+	function handleTouchStart(event) {
+		isDragging = true;
+		const touch = event.touches[0];
+		startX = touch.clientX;
+		startY = touch.clientY;
+	}
 
-	// Iniciar o spawn das focas
-	sealInterval = setInterval(() => {
-		if (!gameOver) spawnSeal();
-	}, 3000);
-}
+	function handleTouchMove(event) {
+		if (!isDragging) return;
+		const touch = event.touches[0];
+		joystickX = touch.clientX - startX;
+		joystickY = touch.clientY - startY;
+	}
+
+	function handleTouchEnd() {
+		isDragging = false;
+		joystickX = 0;
+		joystickY = 0;
+	}
+
+	function startGame() {
+		const isLandscape = window.innerWidth > window.innerHeight;
+		if (!isLandscape) {
+			alert("Roda o telemóvel para horizontal para jogar!");
+			return;
+		}
+		showStartScreen = false;
+		gameStarted = true;
+
+		setTimeout(spawnFish, 3000);
+		updatePosition();
+
+		sealInterval = setInterval(() => {
+			if (!gameOver) spawnSeal();
+		}, 3000);
+	}
 
 	function spawnFish() {
 		fishX = Math.random() * (window.innerWidth - 64);
@@ -111,24 +116,24 @@ function startGame() {
 	}
 
 	function checkSealCollision() {
-	if (gameOver) return;
+		if (gameOver) return;
 
-	const penguinCenterX = x + 50;
-	const penguinCenterY = y + 50;
+		const penguinCenterX = x + 50;
+		const penguinCenterY = y + 50;
 
-	for (let seal of seals) {
-		const sealCenterX = seal.x + 225;
-		const sealCenterY = seal.y + 225;
-		const dx = penguinCenterX - sealCenterX;
-		const dy = penguinCenterY - sealCenterY;
-		const distance = Math.sqrt(dx * dx + dy * dy);
+		for (let seal of seals) {
+			const sealCenterX = seal.x + 225;
+			const sealCenterY = seal.y + 225;
+			const dx = penguinCenterX - sealCenterX;
+			const dy = penguinCenterY - sealCenterY;
+			const distance = Math.sqrt(dx * dx + dy * dy);
 
-		if (distance < 100) {
-			gameOver = true;
-			fadeOut();
-			break;
+			if (distance < 100) {
+				gameOver = true;
+				fadeOut();
+				break;
+			}
 		}
-	}
 	}
 
 	function checkCollision() {
@@ -154,137 +159,114 @@ function startGame() {
 		}
 	}
 
-		function fadeOut() {
+	function fadeOut() {
 		setTimeout(() => {
 			showEndScreen = true;
 			loadLeaderboard();
-		}, 300); // pequeno atraso opcional para suavizar
+		}, 300);
 	}
 
 	function spawnSeal() {
 		const fromLeft = Math.random() < 0.5;
-		const y = Math.random() * (window.innerHeight - 128); // posição vertical aleatória
+		const y = Math.random() * (window.innerHeight - 128);
 		const direction = fromLeft ? 1 : -1;
-		const x = fromLeft ? -200 : window.innerWidth + 200; // fora do ecrã
+		const x = fromLeft ? -200 : window.innerWidth + 200;
 
 		seals.push({
 			x,
 			y,
 			direction,
-			speed: sealSpeed + Math.random() * 1.5 // velocidade ligeiramente variável
+			speed: sealSpeed + Math.random() * 1.5
 		});
 	}
-
 
 	function updatePosition() {
-	// Se estiver a usar o joystick, converte os valores para aceleração
-	if (isDragging) {
-		const normalizedX = joystickX / 40; // 40 é o limite do stick
-		const normalizedY = joystickY / 40;
-		ax = normalizedX * speed;
-		ay = normalizedY * speed;
-	} else {
-		ax = 0;
-		ay = 0;
-		if (keys.w) ay = -speed;
-		if (keys.s) ay = speed;
-		if (keys.a) ax = -speed;
-		if (keys.d) ax = speed;
-	}
-
-	vx += ax;
-	vy += ay;
-
-	// Limita velocidade
-	vx = Math.max(-maxSpeed, Math.min(maxSpeed, vx));
-	vy = Math.max(-maxSpeed, Math.min(maxSpeed, vy));
-
-	// Aplica drag
-	vx *= drag;
-	vy *= drag;
-
-	x += vx;
-	y += vy;
-
-	const penguinWidth = 100;
-	const penguinHeight = 100;
-
-	x = Math.max(0, Math.min(window.innerWidth - penguinWidth, x));
-	y = Math.max(0, Math.min(window.innerHeight - penguinHeight, y));
-
-	// Atualiza direção do pinguim
-	if (vx < -0.5) facingLeft = true;
-	else if (vx > 0.5) facingLeft = false;
-
-	if (!gameOver) {
-		checkCollision();
-		checkSealCollision();
-	}
-
-	// Movimento das focas
-	for (let i = seals.length - 1; i >= 0; i--) {
-		seals[i].x += seals[i].speed * seals[i].direction;
-
-		if (
-			(seals[i].direction === 1 && seals[i].x > window.innerWidth + 200) ||
-			(seals[i].direction === -1 && seals[i].x < -200)
-		) {
-			seals.splice(i, 1);
+		if (isDragging) {
+			const normalizedX = joystickX / 40;
+			const normalizedY = joystickY / 40;
+			ax = normalizedX * speed;
+			ay = normalizedY * speed;
+		} else {
+			ax = 0;
+			ay = 0;
+			if (keys.w) ay = -speed;
+			if (keys.s) ay = speed;
+			if (keys.a) ax = -speed;
+			if (keys.d) ax = speed;
 		}
+
+		vx += ax;
+		vy += ay;
+
+		vx = Math.max(-maxSpeed, Math.min(maxSpeed, vx));
+		vy = Math.max(-maxSpeed, Math.min(maxSpeed, vy));
+
+		vx *= drag;
+		vy *= drag;
+
+		x += vx;
+		y += vy;
+
+		const penguinWidth = 100;
+		const penguinHeight = 100;
+
+		x = Math.max(0, Math.min(window.innerWidth - penguinWidth, x));
+		y = Math.max(0, Math.min(window.innerHeight - penguinHeight, y));
+
+		if (vx < -0.5) facingLeft = true;
+		else if (vx > 0.5) facingLeft = false;
+
+		if (!gameOver) {
+			checkCollision();
+			checkSealCollision();
+		}
+
+		for (let i = seals.length - 1; i >= 0; i--) {
+			seals[i].x += seals[i].speed * seals[i].direction;
+
+			if (
+				(seals[i].direction === 1 && seals[i].x > window.innerWidth + 200) ||
+				(seals[i].direction === -1 && seals[i].x < -200)
+			) {
+				seals.splice(i, 1);
+			}
+		}
+
+		requestAnimationFrame(updatePosition);
 	}
 
-	requestAnimationFrame(updatePosition);
-}
+	function scaleGame() {
+		const game = document.querySelector('.fixed-resolution-wrapper');
+		if (!(game instanceof HTMLElement)) return;
 
-onMount(() => {
-	scaleGame();
-	window.addEventListener('resize', scaleGame);
-});
+		const scaleX = window.innerWidth / 1280;
+		const scaleY = window.innerHeight / 720;
+		const scale = Math.min(scaleX, scaleY);
 
-function scaleGame() {
-  const game = document.querySelector('.fixed-resolution-wrapper');
-  const wrapper = document.querySelector('.scaled-wrapper');
+		game.style.transform = `translate(-50%, -50%) scale(${scale})`;
+	}
 
-  if (!(game instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
-
-  const scaleX = window.innerWidth / 1280;
-  const scaleY = window.innerHeight / 720;
-  const scale = Math.min(scaleX, scaleY);
-
-  game.style.transform = `translate(-50%, -50%) scale(${scale})`;
-}
-
-	onMount(() => {
-		window.addEventListener("keydown", (e) => {
-			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
-		});
-		window.addEventListener("keyup", (e) => {
-			if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
-		});
-		
-	});
-
-		let rockSetups = Array.from({ length: 6 }, () => ({
+	let rockSetups = Array.from({ length: 6 }, () => ({
 		left: Math.random() * window.innerWidth,
 		scale: 0.5 + Math.random() * 1.2,
 		opacity: 0.5 + Math.random() * 0.5
 	}));
 
-		let algaeSetups = Array.from({ length: 15 }, () => ({
+	let algaeSetups = Array.from({ length: 15 }, () => ({
 		left: Math.random() * window.innerWidth,
 		height: 60 + Math.random() * 100,
 		scale: 0.5 + Math.random() * 1.5,
 		opacity: 0.6 + Math.random() * 0.4
 	}));
 
-		let coralSetups = Array.from({ length: 10 }, () => ({
+	let coralSetups = Array.from({ length: 10 }, () => ({
 		left: Math.random() * window.innerWidth,
 		height: 60 + Math.random() * 100,
 		scale: 0.5 + Math.random() * 2,
 		opacity: 0.6 + Math.random() * 0.4
-		}));
+	}));
 
-			let playerName = '';
+	let playerName = '';
 	let leaderboard = [];
 
 	function loadLeaderboard() {
@@ -299,13 +281,12 @@ function scaleGame() {
 
 		leaderboard.push({ name: playerName.trim(), score: caughtCount });
 		leaderboard.sort((a, b) => b.score - a.score);
-		leaderboard = leaderboard.slice(0, 3); // Top 3
+		leaderboard = leaderboard.slice(0, 3);
 
 		localStorage.setItem('penguin_leaderboard', JSON.stringify(leaderboard));
 		playerName = '';
 		scoreSaved = true;
 	}
-
 </script>
 
 <style>
@@ -322,11 +303,10 @@ function scaleGame() {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 1280px; /* resolução base do teu jogo */
+  width: 1280px;
   height: 720px;
-  transform-origin: top left;
-  /* não aplicar aqui o scale direto */
-  pointer-events: none; /* para evitar clicar fora do jogo */
+  transform-origin: center center; /* <-- ALTERADO */
+  pointer-events: none;
   z-index: 1000;
 }
 
