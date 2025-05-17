@@ -106,15 +106,11 @@
 	
 function requestFullscreenIfMobile() {
 	if (isMobile) {
-		const docElm = document.documentElement;
-		if (docElm.requestFullscreen) {
-			docElm.requestFullscreen();
-		} else if ((docElm as any).webkitRequestFullscreen) {
-			(docElm as any).webkitRequestFullscreen();
-		} else if ((docElm as any).msRequestFullscreen) {
-			(docElm as any).msRequestFullscreen() ;
-		}
-	}
+  const docElm = document.documentElement;
+  if (docElm.requestFullscreen) {
+    docElm.requestFullscreen();
+  }
+}
 }
 
 	function spawnFish() {
