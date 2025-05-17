@@ -374,7 +374,7 @@
 .world {
 	width: 100%;
 	height: 100%;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	background: linear-gradient(to bottom, #00334d, #004466 30%, #001e2d 80%, #000 100%);
@@ -535,20 +535,16 @@
 }
 
 .start-screen {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.8);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	z-index: 1000;
-	color: white;
-	font-size: 1.5em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	text-align: center;
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 100%;
+	border-radius: 20px;
+	z-index: 10;
 }
 
 .start-screen button {
@@ -647,7 +643,6 @@
     style="left: calc(50% + {joystickX}px); top: calc(50% + {joystickY}px);"
   />
 </div>
-		style="position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; background: white; border-radius: 50%; transform: translate({joystickX}px, {joystickY}px); transition: transform 0.05s;">
 	</div>
 </div>
 </div>
