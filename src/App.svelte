@@ -61,6 +61,7 @@
 	function checkOrientation() {
 		isPortrait = window.innerHeight > window.innerWidth;
 		scaleGame();
+
 	}
 
 	function handleTouchStart(event) {
@@ -84,6 +85,8 @@
 	}
 
 	function startGame() {
+		requestFullscreenIfMobile();
+		
 		const isLandscape = window.innerWidth > window.innerHeight;
 		if (!isLandscape) {
 			alert("Roda o telemóvel na horizontal para jogar!");
@@ -99,6 +102,19 @@
 			if (!gameOver) spawnSeal();
 		}, 3000);
 	}
+
+function requestFullscreenIfMobile() {
+	if (isMobile) {
+		const docElm = document.documentElement;
+		if (docElm.requestFullscreen) {
+			docElm.requestFullscreen();
+		} else if ((docElm as any).webkitRequestFullscreen) {
+			(docElm as any).webkitRequestFullscreen();
+		} else if ((docElm as any).msRequestFullscreen) {
+			(docElm as any).msRequestFullscreen();
+		}
+	}
+}
 
 	function spawnFish() {
 		fishX = Math.random() * (1920 - 64);
@@ -147,7 +163,7 @@
 		const dy = penguinCenterY - fishCenterY;
 		const distance = Math.sqrt(dx * dx + dy * dy);
 
-		const collisionRadius = 80;
+		const collisionRadius = 150;
 
 		if (distance < collisionRadius) {
 			caughtCount++;
@@ -224,8 +240,8 @@
 			seals[i].x += seals[i].speed * seals[i].direction;
 
 			if (
-				(seals[i].direction === 1 && seals[i].x > window.innerWidth + 200) ||
-				(seals[i].direction === -1 && seals[i].x < -200)
+				(seals[i].direction === 1 && seals[i].x > 1920 + 200) ||
+				(seals[i].direction === -1 && seals[i].x < -600)
 			) {
 				seals.splice(i, 1);
 			}
@@ -313,7 +329,7 @@
   left: 50%;
   width: 1920px;
   height: 1080px;
-  transform-origin: center center; /* <-- ALTERADO */
+  transform-origin: center center;
   pointer-events: none;
   z-index: 1000;
 }
@@ -333,20 +349,19 @@
 }
 
 .portrait-warning {
-	position: fixed;
+position: absolute;
 	top: 0;
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: #000;
+	background: black;
 	color: white;
 	display: flex;
-	align-items: center;
 	justify-content: center;
-	font-size: 1.5em;
-	z-index: 9999;
+	align-items: center;
+	font-size: 2rem;
 	text-align: center;
-	padding: 20px;
+	z-index: 9999;
 }
 
 .endscreen {
@@ -416,20 +431,6 @@
 	height: 9%;
 	position: absolute;
 	background: url("/fish.png") no-repeat center center / contain;
-}
-
-.message {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	color: white;
-	font-size: 5em;
-	background: rgba(0, 0, 0, 0.5);
-	padding: 10px 20px;
-	border-radius: 10px;
-	animation: fadeout 1.5s forwards;
-	pointer-events: none;
 }
 
 @keyframes fadeout {
@@ -571,23 +572,6 @@
 	background-color: #ddd;
 }
 
-.rotate-warning {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: #001e2d;
-	color: white;
-	font-size: 2em;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	padding: 40px;
-	z-index: 2000;
-	display: none;
-}
-
 .joystick-container {
 	position: fixed;
 	bottom: 100px;
@@ -612,8 +596,17 @@
 }
 </style>
 
-<div class="fixed-resolution-wrapper">
-  <div class="scaled-wrapper">
+    <div>
+      <!-- Aviso para modo retrato -->
+      {#if isPortrait}
+        <div class="portrait-warning">
+          Por favor, roda o dispositivo na horizontal para jogar.
+        </div>
+      {/if}
+  	</div>
+
+  <div class="fixed-resolution-wrapper">
+  	<div class="scaled-wrapper">
     <div class="world">
 
       <div class="rotate-warning">
@@ -640,18 +633,11 @@
         <div class="start-screen">
           {#if !isPortrait}
             <button on:click={startGame}>START</button>
-          {:else}
-            <p>Roda o telemóvel para começar!</p>
           {/if}
         </div>
       {/if}
 
-      <!-- Aviso para modo retrato -->
-      {#if isPortrait}
-        <div class="portrait-warning">
-          Por favor, roda o dispositivo para horizontal para jogar.
-        </div>
-      {/if}
+
 
       <!-- Ecrã final -->
       {#if showEndScreen}
@@ -761,14 +747,11 @@
         <div class="fish" style="left: {fishX}px; top: {fishY}px;"></div>
       {/if}
 
-      <!-- Mensagem -->
-      {#if showMessage}
-        <div class="message">{message}</div>
-      {/if}
 
       <!-- Contador -->
       <div class="counter">Peixes: {caughtCount}</div>
 
-    </div>
-  </div>
+	</div>
+	</div>
 </div>
+
