@@ -360,14 +360,14 @@
 		color: white;
 		font-size: 2em;
 		background: rgba(0, 0, 0, 0.8);
-		padding: 40px;
+		padding: 4vh;
 		border-radius: 20px;
 		text-align: center;
 		z-index: 1100;
 	}
 
 	.endscreen button {
-		margin-top: 20px;
+		margin-top: 2vh;
 		padding: 10px 20px;
 		font-size: 1em;
 		cursor: pointer;
@@ -438,8 +438,8 @@
 
 		.counter {
 			position: absolute;
-			top: 10px;
-			left: 10px;
+			top: 1vw;
+			left: 1vh;
 			color: white;
 			font-size: 1.5em;
 			background: rgba(0, 0, 0, 0.5);
@@ -449,9 +449,9 @@
 
 		.bubble {
 			position: absolute;
-			bottom: -30px;
-			width: 10px;
-			height: 10px;
+			bottom: -3vh;
+			width: 1vw;
+			height: 1vh;
 			background: rgba(255, 255, 255, 0.3);
 			border-radius: 50%;
 			animation: rise 6s infinite ease-in;
@@ -473,8 +473,8 @@
 		.rock {
 			position: absolute;
 			bottom: -10px;
-			width: 80px;
-			height: 60px;
+			width: 6vw;
+			height: 4vh;
 			background: radial-gradient(circle at 30% 30%, #555, #222);
 			border-radius: 50% 50% 40% 40%;
 			box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.4);
@@ -483,8 +483,8 @@
 		.algae {
 			position: absolute;
 			bottom: -3px;
-			width: 32px;
-			height: var(--height, 80px);
+			width: 3vw;
+			height: var(--height, 8vh);
 			background: url("/algas.png") no-repeat center bottom / contain;
 			animation: sway 2s infinite alternate ease-in-out;
 			transform-origin: bottom center;
@@ -494,8 +494,8 @@
 			.coral {
 			position: absolute;
 			bottom: -3px;
-			width: 32px;
-			height: var(--height, 80px);
+			width: 3vw;
+			height: var(--height, 8vh);
 			background: url("/coral.png") no-repeat center bottom / contain;
 			animation: sway 2s infinite alternate ease-in-out;
 			transform-origin: bottom center;
@@ -509,14 +509,14 @@
 		border-radius: 6px;
 		border: none;
 		width: 80%;
-		max-width: 200px;
+		max-width: 20vw;
 		text-align: center;
 	}
 
 	.endscreen ul {
 		list-style: none;
 		padding: 0;
-		margin-top: 10px;
+		margin-top: 1vh;
 		color: #ffecb3;
 	}
 
@@ -590,8 +590,8 @@
 	}
 
 	.joystick {
-		width: 80px;
-		height: 80px;
+		width: 8vw;
+		height: 8vh;
 		background: rgba(255, 255, 255, 0.2);
 		border: 2px solid white;
 		border-radius: 50%;
@@ -604,8 +604,8 @@
 		position: fixed;
 		bottom: 20px;
 		left: 20px;
-		width: 100px;
-		height: 100px;
+		width: 10vw;
+		height: 10vh;
 		background-color: rgba(100, 100, 100, 0.3);
 		border-radius: 50%;
 		touch-action: none;
@@ -615,8 +615,8 @@
 
 	.joystick-thumb {
 		position: absolute;
-		width: 40px;
-		height: 40px;
+		width: 4vw;
+		height: 40vh;
 		background-color: rgba(255, 255, 255, 0.7);
 		border-radius: 50%;
 		transform: translate(-50%, -50%);
@@ -627,7 +627,7 @@
 	<div class="world">
 
 		<div class="game-area">
-			
+
 	<div class="rotate-warning">
 		Por favor, rode o dispositivo na horizontal para jogar!
 
