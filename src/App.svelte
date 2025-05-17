@@ -242,16 +242,16 @@ onMount(() => {
 });
 
 function scaleGame() {
-	const game = document.querySelector('.fixed-resolution-wrapper');
-	const wrapper = document.querySelector('.scaled-wrapper');
+  const game = document.querySelector('.fixed-resolution-wrapper');
+  const wrapper = document.querySelector('.scaled-wrapper');
 
-	if (!(game instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
+  if (!(game instanceof HTMLElement) || !(wrapper instanceof HTMLElement)) return;
 
-	const scaleX = window.innerWidth / 1280;
-	const scaleY = window.innerHeight / 720;
-	const scale = Math.min(scaleX, scaleY);
+  const scaleX = window.innerWidth / 1280;
+  const scaleY = window.innerHeight / 720;
+  const scale = Math.min(scaleX, scaleY);
 
-	game.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  game.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
 	onMount(() => {
@@ -309,7 +309,7 @@ function scaleGame() {
 </script>
 
 <style>
-
+	
 :global(html, body) {
 	margin: 0;
 	padding: 0;
@@ -318,14 +318,24 @@ function scaleGame() {
 	height: 100%;
 }
 
-.game-area {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-	background: linear-gradient(to bottom, #013, #045); /* só para dar um fundo */
+.fixed-resolution-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1280px; /* resolução base do teu jogo */
+  height: 720px;
+  transform-origin: top left;
+  /* não aplicar aqui o scale direto */
+  pointer-events: none; /* para evitar clicar fora do jogo */
+  z-index: 1000;
+}
+
+.scaled-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  /* será escalado com JS */
 }
 
 .hidden {
@@ -391,117 +401,124 @@ function scaleGame() {
 	overflow: hidden;
 }
 
-	.seal {
-		width: 450px;
-		height: 450px;
-		position: absolute;
-		background: url("/seal.png") no-repeat center center / contain;
-		filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.3));
-		transform-origin: center;
+/* Tamanhos relativos à resolução base 1280x720 */
+
+/* seal: 450px / 1280 = 35.16% width, altura igual à largura para manter proporção */
+.seal {
+	width: 35.16%;
+	height: 35.16%;
+	position: absolute;
+	background: url("/seal.png") no-repeat center center / contain;
+	filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.3));
+	transform-origin: center;
+}
+
+/* penguin: 100px / 1280 = 7.81% width e height */
+.penguin {
+	width: 7.81%;
+	height: 7.81%;
+	position: absolute;
+	background: url("/Pinguim.png") no-repeat center center / contain;
+	transition: transform 0.15s linear;
+	filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* fish: 70px / 1280 = 5.47% width e height */
+.fish {
+	width: 5.47%;
+	height: 5.47%;
+	position: absolute;
+	background: url("/fish.png") no-repeat center center / contain;
+}
+
+.message {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 5em;
+	background: rgba(0, 0, 0, 0.5);
+	padding: 10px 20px;
+	border-radius: 10px;
+	animation: fadeout 1.5s forwards;
+	pointer-events: none;
+}
+
+@keyframes fadeout {
+	0% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+.counter {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	color: white;
+	font-size: 1.5em;
+	background: rgba(0, 0, 0, 0.5);
+	padding: 8px 16px;
+	border-radius: 8px;
+}
+
+.bubble {
+	position: absolute;
+	bottom: -30px;
+	width: 10px; /* pequeno, manter fixo em px pode ser ok */
+	height: 10px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	animation: rise 6s infinite ease-in;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+@keyframes rise {
+	0% {
+		transform: translateY(0) scale(1);
+		opacity: 0.6;
 	}
-
-	.penguin {
-		width: 100px;
-		height: 100px;
-		position: absolute;
-		background: url("/Pinguim.png") no-repeat center center / contain;
-		transition: transform 0.15s linear;
-		filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+	100% {
+		transform: translateY(-110vh) scale(1.5);
+		opacity: 0;
 	}
+}
 
-	.fish {
-		width: 70px;
-		height: 70px;
-		position: absolute;
-		background: url("/fish.png") no-repeat center center / contain;
-	}
+.rock {
+	position: absolute;
+	bottom: -10px;
+	/* 80px / 1280 = 6.25% width, 60px / 720 = 8.33% height */
+	width: 6.25%;
+	height: 8.33%;
+	background: radial-gradient(circle at 30% 30%, #555, #222);
+	border-radius: 50% 50% 40% 40%;
+	box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.4);
+}
 
-	.message {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		color: white;
-		font-size: 5em;
-		background: rgba(0, 0, 0, 0.5);
-		padding: 10px 20px;
-		border-radius: 10px;
-		animation: fadeout 1.5s forwards;
-		pointer-events: none;
-	}
+.algae {
+	position: absolute;
+	bottom: -3px;
+	/* 32px / 1280 = 2.5% width, height relativa via variável CSS já definida */
+	width: 2.5%;
+	height: var(--height, 11.11%); /* 80px / 720 = 11.11% */
+	background: url("/algas.png") no-repeat center bottom / contain;
+	animation: sway 2s infinite alternate ease-in-out;
+	transform-origin: bottom center;
+	pointer-events: none;
+}
 
-	@keyframes fadeout {
-		0% { opacity: 1; }
-		100% { opacity: 0; }
-	}
+.coral {
+	position: absolute;
+	bottom: -3px;
+	width: 2.5%;
+	height: var(--height, 11.11%);
+	background: url("/coral.png") no-repeat center bottom / contain;
+	animation: sway 2s infinite alternate ease-in-out;
+	transform-origin: bottom center;
+	pointer-events: none;
+}
 
-	.counter {
-		position: absolute;
-		top: 10px;
-		left: 10px;
-		color: white;
-		font-size: 1.5em;
-		background: rgba(0, 0, 0, 0.5);
-		padding: 8px 16px;
-		border-radius: 8px;
-	}
-
-	.bubble {
-		position: absolute;
-		bottom: -30px;
-		width: 10px;
-		height: 10px;
-		background: rgba(255, 255, 255, 0.3);
-		border-radius: 50%;
-		animation: rise 6s infinite ease-in;
-		overflow: hidden;
-		pointer-events: none;
-	}
-
-	@keyframes rise {
-		0% {
-			transform: translateY(0) scale(1);
-			opacity: 0.6;
-		}
-		100% {
-			transform: translateY(-110vh) scale(1.5); /* sobe acima do ecrã */
-			opacity: 0;
-		}
-	}
-
-	.rock {
-		position: absolute;
-		bottom: -10px;
-		width: 80px;
-		height: 60px;
-		background: radial-gradient(circle at 30% 30%, #555, #222);
-		border-radius: 50% 50% 40% 40%;
-		box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.4);
-	}
-
-	.algae {
-		position: absolute;
-		bottom: -3px;
-		width: 32px;
-		height: var(--height, 80px);
-		background: url("/algas.png") no-repeat center bottom / contain;
-		animation: sway 2s infinite alternate ease-in-out;
-		transform-origin: bottom center;
-		pointer-events: none;
-	}	
-
-		.coral {
-		position: absolute;
-		bottom: -3px;
-		width: 32px;
-		height: var(--height, 80px);
-		background: url("/coral.png") no-repeat center bottom / contain;
-		animation: sway 2s infinite alternate ease-in-out;
-		transform-origin: bottom center;
-		pointer-events: none;
-	}	
-
-	.endscreen input {
+.endscreen input {
 	margin-top: 10px;
 	padding: 8px;
 	font-size: 1em;
@@ -523,12 +540,12 @@ function scaleGame() {
 	margin: 4px 0;
 }
 
-	@keyframes sway {
-		0% { transform: rotate(3deg); }
-		100% { transform: rotate(-3deg); }
-	}
+@keyframes sway {
+	0% { transform: rotate(3deg); }
+	100% { transform: rotate(-3deg); }
+}
 
-	@media screen and (orientation: portrait) {
+@media screen and (orientation: portrait) {
 	.rotate-warning {
 		display: flex;
 	}
@@ -589,8 +606,8 @@ function scaleGame() {
 }
 
 .joystick {
-	width: 80px;
-	height: 80px;
+	width: 6.25%; /* 80px / 1280 */
+	height: 11.11%; /* 80px / 720 */
 	background: rgba(255, 255, 255, 0.2);
 	border: 2px solid white;
 	border-radius: 50%;
@@ -599,33 +616,35 @@ function scaleGame() {
 	touch-action: none;
 }
 
- .joystick-container {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 100px;
-    height: 100px;
-    background-color: rgba(100, 100, 100, 0.3);
-    border-radius: 50%;
-    touch-action: none;
-    user-select: none;
-    overflow: hidden;
-  }
+.joystick-container {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	width: 7.81%; /* 100px / 1280 */
+	height: 13.89%; /* 100px / 720 */
+	background-color: rgba(100, 100, 100, 0.3);
+	border-radius: 50%;
+	touch-action: none;
+	user-select: none;
+	overflow: hidden;
+}
 
-  .joystick-thumb {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-  }
+.joystick-thumb {
+	position: absolute;
+	width: 3.13%; /* 40px / 1280 */
+	height: 5.56%; /* 40px / 720 */
+	background-color: rgba(255, 255, 255, 0.7);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
 </style>
 
 
-<div class="game-area">
-	<div class="world">
+<div class="fixed-resolution-wrapper">
+  <div class="scaled-wrapper">
+
+<div class="world">
 
 	<div class="rotate-warning">
 	Por favor, rode o dispositivo na horizontal para jogar!
@@ -651,14 +670,6 @@ function scaleGame() {
 		style="position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; background: white; border-radius: 50%; transform: translate({joystickX}px, {joystickY}px); transition: transform 0.05s;">
 	</div>
 </div>
-</div>
-
-<div class="scaled-wrapper">
-	<div class="fixed-resolution-wrapper">
-		<div class="world">
-			<!-- tudo o resto do jogo aqui dentro -->
-		</div>
-	</div>
 </div>
 
 {#if showStartScreen}
@@ -798,5 +809,6 @@ function scaleGame() {
 	<!-- Contador -->
 	<div class="counter">Peixes: {caughtCount}</div>
 
+	
+  </div>
 </div>
-
