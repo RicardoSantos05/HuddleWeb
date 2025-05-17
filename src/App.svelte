@@ -361,6 +361,35 @@ position: absolute;
 	z-index: 9999;
 }
 
+.catch-message {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 200px;
+	color: white;
+	text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.7);
+	font-family: 'Comic Sans MS', cursive, sans-serif;
+	z-index: 2000;
+	animation: pop 1.5s ease;
+	pointer-events: none;
+}
+
+@keyframes pop {
+	0% {
+		transform: translate(-50%, -50%) scale(0.6);
+		opacity: 0;
+	}
+	10% {
+		transform: translate(-50%, -50%) scale(1.1);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 0;
+	}
+}
+
 .endscreen {
 	position: fixed;
 	top: 50%;
@@ -449,11 +478,11 @@ position: absolute;
 .bubble {
 	position: absolute;
 	bottom: -30px;
-	width: 10px; /* pequeno, manter fixo em px pode ser ok */
+	width: 10px;
 	height: 10px;
 	background: rgba(255, 255, 255, 0.3);
 	border-radius: 50%;
-	animation: rise 6s infinite ease-in;
+	animation: rise 7s infinite ease-in;
 	overflow: hidden;
 	pointer-events: none;
 }
@@ -464,7 +493,7 @@ position: absolute;
 		opacity: 0.6;
 	}
 	100% {
-		transform: translateY(-110vh) scale(1.5);
+		transform: translateY(-2000px) scale(1.5);
 		opacity: 0;
 	}
 }
@@ -634,7 +663,11 @@ position: absolute;
         </div>
       {/if}
 
-
+		{#if showMessage}
+		<div class="catch-message">
+	{message}
+</div>
+	{/if}
 
       <!-- Ecrã final -->
       {#if showEndScreen}
@@ -665,7 +698,8 @@ position: absolute;
           <button on:click={() => location.reload()}>Tentar outra vez</button>
         </div>
       {/if}
-
+	  
+		<!-- Bublles-->
 		{#each bubbleSetups as bubble}
 	<img
 		src="bubble.png"
