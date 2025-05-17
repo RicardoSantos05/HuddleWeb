@@ -86,7 +86,7 @@
 
 	function startGame() {
 		requestFullscreenIfMobile();
-		
+
 		const isLandscape = window.innerWidth > window.innerHeight;
 		if (!isLandscape) {
 			alert("Roda o telemóvel na horizontal para jogar!");
@@ -95,14 +95,15 @@
 		showStartScreen = false;
 		gameStarted = true;
 
-		setTimeout(spawnFish, 3000);
+		setTimeout(spawnFish, 3001);
 		updatePosition();
 
 		sealInterval = setInterval(() => {
 			if (!gameOver) spawnSeal();
 		}, 3000);
 	}
-
+  
+	
 function requestFullscreenIfMobile() {
 	if (isMobile) {
 		const docElm = document.documentElement;
@@ -111,7 +112,7 @@ function requestFullscreenIfMobile() {
 		} else if ((docElm as any).webkitRequestFullscreen) {
 			(docElm as any).webkitRequestFullscreen();
 		} else if ((docElm as any).msRequestFullscreen) {
-			(docElm as any).msRequestFullscreen();
+			(docElm as any).msRequestFullscreen() ;
 		}
 	}
 }
