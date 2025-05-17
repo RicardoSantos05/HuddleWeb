@@ -356,9 +356,22 @@ position: absolute;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 2rem;
+	font-size: 0.7rem;
 	text-align: center;
 	z-index: 9999;
+}
+
+.start-title {
+	position: absolute;
+	top: 100px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 180px;
+	font-family: 'Arial Black', sans-serif;
+	color: white;
+	text-shadow: 40px 40px 25px rgba(0, 0, 0, 0.7);
+	z-index: 1001;
+	pointer-events: none;
 }
 
 .catch-message {
@@ -466,10 +479,10 @@ position: absolute;
 
 .counter {
 	position: absolute;
-	top: 10px;
-	left: 10px;
+	top: 20px;
+	left: 20px;
 	color: white;
-	font-size: 1.5em;
+	font-size: 3em;
 	background: rgba(0, 0, 0, 0.5);
 	padding: 8px 16px;
 	border-radius: 8px;
@@ -493,7 +506,7 @@ position: absolute;
 		opacity: 0.6;
 	}
 	100% {
-		transform: translateY(-2000px) scale(1.5);
+		transform: translateY(-250vh) scale(1.5);
 		opacity: 0;
 	}
 }
@@ -559,15 +572,6 @@ position: absolute;
 	100% { transform: rotate(-3deg); }
 }
 
-@media screen and (orientation: portrait) {
-	.rotate-warning {
-		display: flex;
-	}
-	.world {
-		display: none;
-	}
-}
-
 .start-screen {
 	position: absolute;
 	top: 50%;
@@ -583,10 +587,10 @@ position: absolute;
 
 .start-screen button {
 	padding: 20px 40px;
-	font-size: 1.5em;
+	font-size: 3em;
 	cursor: pointer;
-	background-color: #fff;
-	color: #000;
+	background-color: #1d1d1d;
+	color: #dcdcdc;
 	border: none;
 	border-radius: 12px;
 	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
@@ -595,7 +599,7 @@ position: absolute;
 
 .start-screen button:hover {
 	transform: scale(1.05);
-	background-color: #ddd;
+	background-color: #252525;
 }
 
 .joystick-container {
@@ -635,10 +639,6 @@ position: absolute;
   	<div class="scaled-wrapper">
     <div class="world">
 
-      <div class="rotate-warning">
-        Por favor, rode o dispositivo na horizontal para jogar!
-      </div>
-
       <!-- Joystick -->
       {#if isMobile && !isPortrait && !showStartScreen}
           <div
@@ -656,6 +656,7 @@ position: absolute;
 
       <!-- Ecrã Inicial -->
       {#if showStartScreen}
+		<div class="start-title">HUDDLE</div>
         <div class="start-screen">
           {#if !isPortrait}
             <button on:click={startGame}>START</button>
