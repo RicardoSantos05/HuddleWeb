@@ -167,9 +167,9 @@
 
 	function spawnSeal() {
 		const fromLeft = Math.random() < 0.5;
-		const y = Math.random() * (1080 - 128);
+		const y = Math.random() * (1080 - 300);
 		const direction = fromLeft ? 1 : -1;
-		const x = fromLeft ? -200 : 1920 + 200;
+		const x = fromLeft ? -500 : 1920 + 500;
 
 		seals.push({
 			x,
@@ -412,8 +412,8 @@
 
 /* fish: 70px / 1280 = 5.47% width e height */
 .fish {
-	width: 5.47%;
-	height: 5.47%;
+	width: 9%;
+	height: 9%;
 	position: absolute;
 	background: url("/fish.png") no-repeat center center / contain;
 }
@@ -735,10 +735,7 @@
         ></div>
       {/each}
 
-      <!-- Bolhas -->
-      {#each Array(100) as _, i}
-        <div class="bubble" style="left: {Math.random() * 100}vw; animation-delay: {i * 0.1}s;"></div>
-      {/each}
+   
 
       <!-- Foca Monstruosa -->
       {#each seals as seal}
