@@ -60,8 +60,7 @@
 
 	function checkOrientation() {
 		isPortrait = window.innerHeight > window.innerWidth;
-			scaleGame();
-
+		scaleGame();
 	}
 
 	function handleTouchStart(event) {
@@ -102,8 +101,8 @@
 	}
 
 	function spawnFish() {
-		fishX = Math.random() * (1280 - 64);
-		fishY = Math.random() * (720 - 64);
+		fishX = Math.random() * (1920 - 64);
+		fishY = Math.random() * (1080 - 64);
 		showFish = true;
 	}
 
@@ -115,26 +114,26 @@
 		}, 1500);
 	}
 
-function checkSealCollision() {
-	if (gameOver) return;
+	function checkSealCollision() {
+		if (gameOver) return;
 
-	const penguinCenterX = x + 50;
-	const penguinCenterY = y + 50;
+		const penguinCenterX = x + 50;
+		const penguinCenterY = y + 50;
 
-	for (let seal of seals) {
-		const sealCenterX = seal.x + 250;
-		const sealCenterY = seal.y + 130;
+		for (let seal of seals) {
+			const sealCenterX = seal.x + 300;
+			const sealCenterY = seal.y + 160;
 
-		const dx = Math.abs(penguinCenterX - sealCenterX);
-		const dy = Math.abs(penguinCenterY - sealCenterY);
+			const dx = Math.abs(penguinCenterX - sealCenterX);
+			const dy = Math.abs(penguinCenterY - sealCenterY);
 
-		if (dx < 270 && dy < 40) {
-			gameOver = true;
-			fadeOut();
-			break;
+			if (dx < 280 && dy < 80) {
+				gameOver = true;
+				fadeOut();
+				break;
+			}
 		}
 	}
-}
 
 	function checkCollision() {
 		if (!showFish) return;
@@ -148,7 +147,7 @@ function checkSealCollision() {
 		const dy = penguinCenterY - fishCenterY;
 		const distance = Math.sqrt(dx * dx + dy * dy);
 
-		const collisionRadius = 50;
+		const collisionRadius = 80;
 
 		if (distance < collisionRadius) {
 			caughtCount++;
@@ -168,10 +167,10 @@ function checkSealCollision() {
 
 	function spawnSeal() {
 		const fromLeft = Math.random() < 0.5;
-		const y = Math.random() * (720 - 128);
+		const y = Math.random() * (1080 - 128);
 		const direction = fromLeft ? 1 : -1;
-		const x = fromLeft ? -200 : 1280 + 200;
-		
+		const x = fromLeft ? -200 : 1920 + 200;
+
 		seals.push({
 			x,
 			y,
@@ -210,8 +209,8 @@ function checkSealCollision() {
 		const penguinWidth = 100;
 		const penguinHeight = 100;
 
-		x = Math.max(0, Math.min(1280 - penguinWidth, x));
-		y = Math.max(0, Math.min(720 - penguinHeight, y));
+		x = Math.max(0, Math.min(1920 - penguinWidth, x));
+		y = Math.max(0, Math.min(1080 - penguinHeight, y));
 
 		if (vx < -0.5) facingLeft = true;
 		else if (vx > 0.5) facingLeft = false;
@@ -239,39 +238,39 @@ function checkSealCollision() {
 		const game = document.querySelector('.fixed-resolution-wrapper');
 		if (!(game instanceof HTMLElement)) return;
 
-		const scaleX = window.innerWidth / 1280;
-		const scaleY = window.innerHeight / 720;
+		const scaleX = window.innerWidth / 1920;
+		const scaleY = window.innerHeight / 1080;
 		const scale = Math.min(scaleX, scaleY);
 
 		game.style.transform = `translate(-50%, -50%) scale(${scale})`;
 	}
 
 	let rockSetups = Array.from({ length: 6 }, () => ({
-	left: Math.random() * 1280,
-	scale: 0.5 + Math.random() * 1.2,
-	opacity: 0.5 + Math.random() * 0.5
-}));
+		left: Math.random() * 1920,
+		scale: 0.5 + Math.random() * 1.2,
+		opacity: 0.5 + Math.random() * 0.5
+	}));
 
-let algaeSetups = Array.from({ length: 15 }, () => ({
-	left: Math.random() * 1280,
-	height: 60 + Math.random() * 100,
-	scale: 0.5 + Math.random() * 1.5,
-	opacity: 0.6 + Math.random() * 0.4
-}));
+	let algaeSetups = Array.from({ length: 15 }, () => ({
+		left: Math.random() * 1920,
+		height: 60 + Math.random() * 100,
+		scale: 0.5 + Math.random() * 1.5,
+		opacity: 0.6 + Math.random() * 0.4
+	}));
 
-let coralSetups = Array.from({ length: 10 }, () => ({
-	left: Math.random() * 1280,
-	height: 60 + Math.random() * 100,
-	scale: 0.5 + Math.random() * 2,
-	opacity: 0.6 + Math.random() * 0.4
-}));
+	let coralSetups = Array.from({ length: 10 }, () => ({
+		left: Math.random() * 1920,
+		height: 60 + Math.random() * 100,
+		scale: 0.5 + Math.random() * 2,
+		opacity: 0.6 + Math.random() * 0.4
+	}));
 
-let bubbleSetups = Array.from({ length: 20 }, () => ({
-	left: Math.random() * 1280, // posição horizontal aleatória
-	delay: Math.random() * 5,   // atraso para animar com tempos diferentes
-	scale: 0.1 + Math.random() * 0.7, // tamanho variável
-	opacity: 0.3 + Math.random() * 0.7 // opacidade variável
-}));
+	let bubbleSetups = Array.from({ length: 20 }, () => ({
+		left: Math.random() * 1920,
+		delay: Math.random() * 5,
+		scale: 0.1 + Math.random() * 0.7,
+		opacity: 0.3 + Math.random() * 0.7
+	}));
 
 	let playerName = '';
 	let leaderboard = [];
@@ -312,8 +311,8 @@ let bubbleSetups = Array.from({ length: 20 }, () => ({
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 1280px;
-  height: 720px;
+  width: 1920px;
+  height: 1080px;
   transform-origin: center center; /* <-- ALTERADO */
   pointer-events: none;
   z-index: 1000;
