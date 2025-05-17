@@ -87,7 +87,7 @@
 	function startGame() {
 		const isLandscape = window.innerWidth > window.innerHeight;
 		if (!isLandscape) {
-			alert("Roda o telemóvel para horizontal para jogar!");
+			alert("Roda o telemóvel na horizontal para jogar!");
 			return;
 		}
 		showStartScreen = false;
@@ -102,8 +102,8 @@
 	}
 
 	function spawnFish() {
-		fishX = Math.random() * (window.innerWidth - 64);
-		fishY = Math.random() * (window.innerHeight - 64);
+		fishX = Math.random() * (1280 - 64);
+		fishY = Math.random() * (720 - 64);
 		showFish = true;
 	}
 
@@ -115,26 +115,26 @@
 		}, 1500);
 	}
 
-	function checkSealCollision() {
-		if (gameOver) return;
+function checkSealCollision() {
+	if (gameOver) return;
 
-		const penguinCenterX = x + 50;
-		const penguinCenterY = y + 50;
+	const penguinCenterX = x + 50;
+	const penguinCenterY = y + 50;
 
-		for (let seal of seals) {
-			const sealCenterX = seal.x + 225;
-			const sealCenterY = seal.y + 225;
-			const dx = penguinCenterX - sealCenterX;
-			const dy = penguinCenterY - sealCenterY;
-			const distance = Math.sqrt(dx * dx + dy * dy);
+	for (let seal of seals) {
+		const sealCenterX = seal.x + 250;
+		const sealCenterY = seal.y + 130;
 
-			if (distance < 100) {
-				gameOver = true;
-				fadeOut();
-				break;
-			}
+		const dx = Math.abs(penguinCenterX - sealCenterX);
+		const dy = Math.abs(penguinCenterY - sealCenterY);
+
+		if (dx < 270 && dy < 40) {
+			gameOver = true;
+			fadeOut();
+			break;
 		}
 	}
+}
 
 	function checkCollision() {
 		if (!showFish) return;
@@ -148,7 +148,7 @@
 		const dy = penguinCenterY - fishCenterY;
 		const distance = Math.sqrt(dx * dx + dy * dy);
 
-		const collisionRadius = 60;
+		const collisionRadius = 50;
 
 		if (distance < collisionRadius) {
 			caughtCount++;
@@ -168,10 +168,10 @@
 
 	function spawnSeal() {
 		const fromLeft = Math.random() < 0.5;
-		const y = Math.random() * (window.innerHeight - 128);
+		const y = Math.random() * (720 - 128);
 		const direction = fromLeft ? 1 : -1;
-		const x = fromLeft ? -200 : window.innerWidth + 200;
-
+		const x = fromLeft ? -200 : 1280 + 200;
+		
 		seals.push({
 			x,
 			y,
@@ -210,8 +210,8 @@
 		const penguinWidth = 100;
 		const penguinHeight = 100;
 
-		x = Math.max(0, Math.min(window.innerWidth - penguinWidth, x));
-		y = Math.max(0, Math.min(window.innerHeight - penguinHeight, y));
+		x = Math.max(0, Math.min(1280 - penguinWidth, x));
+		y = Math.max(0, Math.min(720 - penguinHeight, y));
 
 		if (vx < -0.5) facingLeft = true;
 		else if (vx > 0.5) facingLeft = false;
@@ -247,24 +247,31 @@
 	}
 
 	let rockSetups = Array.from({ length: 6 }, () => ({
-		left: Math.random() * window.innerWidth,
-		scale: 0.5 + Math.random() * 1.2,
-		opacity: 0.5 + Math.random() * 0.5
-	}));
+	left: Math.random() * 1280,
+	scale: 0.5 + Math.random() * 1.2,
+	opacity: 0.5 + Math.random() * 0.5
+}));
 
-	let algaeSetups = Array.from({ length: 15 }, () => ({
-		left: Math.random() * window.innerWidth,
-		height: 60 + Math.random() * 100,
-		scale: 0.5 + Math.random() * 1.5,
-		opacity: 0.6 + Math.random() * 0.4
-	}));
+let algaeSetups = Array.from({ length: 15 }, () => ({
+	left: Math.random() * 1280,
+	height: 60 + Math.random() * 100,
+	scale: 0.5 + Math.random() * 1.5,
+	opacity: 0.6 + Math.random() * 0.4
+}));
 
-	let coralSetups = Array.from({ length: 10 }, () => ({
-		left: Math.random() * window.innerWidth,
-		height: 60 + Math.random() * 100,
-		scale: 0.5 + Math.random() * 2,
-		opacity: 0.6 + Math.random() * 0.4
-	}));
+let coralSetups = Array.from({ length: 10 }, () => ({
+	left: Math.random() * 1280,
+	height: 60 + Math.random() * 100,
+	scale: 0.5 + Math.random() * 2,
+	opacity: 0.6 + Math.random() * 0.4
+}));
+
+let bubbleSetups = Array.from({ length: 20 }, () => ({
+	left: Math.random() * 1280, // posição horizontal aleatória
+	delay: Math.random() * 5,   // atraso para animar com tempos diferentes
+	scale: 0.1 + Math.random() * 0.7, // tamanho variável
+	opacity: 0.3 + Math.random() * 0.7 // opacidade variável
+}));
 
 	let playerName = '';
 	let leaderboard = [];
@@ -297,6 +304,8 @@
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
+	background-color: black;
+
 }
 
 .fixed-resolution-wrapper {
@@ -368,7 +377,7 @@
 }
 
 .endscreen button:hover {
-	background: #ddd;
+	background: #222222;
 }
 
 .world {
@@ -381,7 +390,6 @@
 	overflow: hidden;
 }
 
-/* Tamanhos relativos à resolução base 1280x720 */
 
 /* seal: 450px / 1280 = 35.16% width, altura igual à largura para manter proporção */
 .seal {
@@ -581,21 +589,10 @@
 	display: none;
 }
 
-.joystick {
-	width: 6.25%; /* 80px / 1280 */
-	height: 11.11%; /* 80px / 720 */
-	background: rgba(255, 255, 255, 0.2);
-	border: 2px solid white;
-	border-radius: 50%;
-	position: fixed;
-	z-index: 1000;
-	touch-action: none;
-}
-
 .joystick-container {
 	position: fixed;
-	bottom: 20px;
-	left: 20px;
+	bottom: 100px;
+	left: 100px;
 	width: 7.81%; /* 100px / 1280 */
 	height: 13.89%; /* 100px / 720 */
 	background-color: rgba(100, 100, 100, 0.3);
@@ -616,174 +613,166 @@
 }
 </style>
 
-
 <div class="fixed-resolution-wrapper">
   <div class="scaled-wrapper">
+    <div class="world">
 
-<div class="world">
+      <div class="rotate-warning">
+        Por favor, rode o dispositivo na horizontal para jogar!
+      </div>
 
-	<div class="rotate-warning">
-	Por favor, rode o dispositivo na horizontal para jogar!
+      <!-- Joystick -->
+      {#if isMobile && !isPortrait && !showStartScreen}
+          <div
+            class="joystick-container"
+            on:touchstart={handleTouchStart}
+            on:touchmove={handleTouchMove}
+            on:touchend={handleTouchEnd}
+          >
+            <div
+              class="joystick-thumb"
+              style="left: calc(50% + {joystickX}px); top: calc(50% + {joystickY}px);"
+            />
+          </div>
+      {/if}
 
-	<div
-	id="joystick-base"
-	on:touchstart|passive={handleTouchStart}
-	on:touchmove|passive={handleTouchMove}
-	on:touchend={handleTouchEnd}
-	style="position: fixed; bottom: 80px; left: 80px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; touch-action: none; z-index: 999;">
-	<div
+      <!-- Ecrã Inicial -->
+      {#if showStartScreen}
+        <div class="start-screen">
+          {#if !isPortrait}
+            <button on:click={startGame}>START</button>
+          {:else}
+            <p>Roda o telemóvel para começar!</p>
+          {/if}
+        </div>
+      {/if}
 
-  class="joystick-container"
-  on:touchstart={handleTouchStart}
-  on:touchmove={handleTouchMove}
-  on:touchend={handleTouchEnd}
->
-  <div
-    class="joystick-thumb"
-    style="left: calc(50% + {joystickX}px); top: calc(50% + {joystickY}px);"
-  />
-</div>
-	</div>
-</div>
-</div>
+      <!-- Aviso para modo retrato -->
+      {#if isPortrait}
+        <div class="portrait-warning">
+          Por favor, roda o dispositivo para horizontal para jogar.
+        </div>
+      {/if}
 
-{#if showStartScreen}
-	<div class="start-screen">
-		{#if !isPortrait}
-			<button on:click={startGame}>START</button>
-		{:else}
-			<p>Roda o telemóvel para começar!</p>
-		{/if}
-	</div>
-{/if}
+      <!-- Ecrã final -->
+      {#if showEndScreen}
+        <div class="endscreen" transition:fade>
+          <p>Foste apanhado!</p>
+          <p>Peixes: {caughtCount}</p>
 
-{#if isPortrait}
-	<div class="portrait-warning">
-		Por favor, roda o dispositivo para horizontal para jogar.
-	</div>
-{/if}
+          {#if leaderboard.length < 3 || caughtCount > leaderboard[2].score}
 
+            {#if !scoreSaved}
+              <input
+                type="text"
+                bind:value={playerName}
+                placeholder="O teu nome"
+                maxlength="12"
+              />
+              <button on:click={saveScore}>Guardar Score</button>
+            {/if}
+          {/if}
 
+          <h3>🏆 Leaderboard</h3>
+          <ul>
+            {#each leaderboard as entry, index}
+              <li>{index + 1}. {entry.name} — {entry.score} peixe(s)</li>
+            {/each}
+          </ul>
 
-<div
-	class="joystick"
-	on:touchstart|passive={handleTouchStart}
-	on:touchmove|passive={handleTouchMove}
-	on:touchend={handleTouchEnd}
-	style="left: 80px; bottom: 80px;"
-></div>
+          <button on:click={() => location.reload()}>Tentar outra vez</button>
+        </div>
+      {/if}
 
-<!-- Ecrã final -->
-{#if showEndScreen}
-	<div class="endscreen" transition:fade>
-		<p>Foste apanhado!</p>
-		<p>Peixes: {caughtCount}</p>
-
-		{#if leaderboard.length < 3 || caughtCount > leaderboard[2].score}
-			<p>Leaderboard</p>
-
-			{#if !scoreSaved}
-				<input
-					type="text"
-					bind:value={playerName}
-					placeholder="O teu nome"
-					maxlength="12"
-				/>
-				<button on:click={saveScore}>Guardar Score</button>
-			{/if}
-		{/if}
-
-		<h3>🏆 Leaderboard</h3>
-		<ul>
-			{#each leaderboard as entry, index}
-				<li>{index + 1}. {entry.name} — {entry.score} peixe(s)</li>
-			{/each}
-		</ul>
-
-		<button on:click={() => location.reload()}>Tentar outra vez</button>
-	</div>
-{/if}
-
-	<!-- Rochas -->
-	{#each rockSetups as rock}
-		<div
-			class="rock"
-			style="
-				left: {rock.left}px;
-				transform: scale({rock.scale});
-				opacity: {rock.opacity};
-			"
-		></div>
+		{#each bubbleSetups as bubble}
+	<img
+		src="bubble.png"
+		alt="Bubble"
+		class="bubble"
+		style="
+			left: {bubble.left}px;
+			animation-delay: {bubble.delay}s;
+			transform: scale({bubble.scale});
+			opacity: {bubble.opacity};
+		"
+		/>
 	{/each}
 
-{#if isMobile && !isPortrait && !showStartScreen}
-	<div class="joystick" ></div>
-{/if}
+      <!-- Rochas -->
+      {#each rockSetups as rock}
+        <div
+          class="rock"
+          style="
+            left: {rock.left}px;
+            transform: scale({rock.scale});
+            opacity: {rock.opacity};
+          "
+        ></div>
+      {/each}
 
-	<!-- Algas -->
-	{#each algaeSetups as algae}
-		<div
-			class="algae"
-			style="
-				left: {algae.left}px;
-				--height: {algae.height}px;
-				transform: scaleX({algae.scale});
-				opacity: {algae.opacity};
-			"
-		></div>
-	{/each}
+      <!-- Algas -->
+      {#each algaeSetups as algae}
+        <div
+          class="algae"
+          style="
+            left: {algae.left}px;
+            --height: {algae.height}px;
+            transform: scaleX({algae.scale});
+            opacity: {algae.opacity};
+          "
+        ></div>
+      {/each}
 
-		<!-- Coral -->
-	{#each coralSetups as coral}
-		<div
-			class="coral"
-			style="
-				left: {coral.left}px;
-				--height: {coral.height}px;
-				transform: scaleX({coral.scale});
-				opacity: {coral.opacity};
-			"
-		></div>
-	{/each}
+      <!-- Coral -->
+      {#each coralSetups as coral}
+        <div
+          class="coral"
+          style="
+            left: {coral.left}px;
+            --height: {coral.height}px;
+            transform: scaleX({coral.scale});
+            opacity: {coral.opacity};
+          "
+        ></div>
+      {/each}
 
+      <!-- Bolhas -->
+      {#each Array(100) as _, i}
+        <div class="bubble" style="left: {Math.random() * 100}vw; animation-delay: {i * 0.1}s;"></div>
+      {/each}
 
-	<!-- Bolhas -->
-	{#each Array(100) as _, i}
-		<div class="bubble" style="left: {Math.random() * 100}vw; animation-delay: {i * 0.1}s;"></div>
-	{/each}
+      <!-- Foca Monstruosa -->
+      {#each seals as seal}
+        <div
+          class="seal"
+          style="
+            left: {seal.x}px;
+            top: {seal.y}px;
+            transform: scaleX({seal.direction});
+          "
+        ></div>
+      {/each}
 
-	<!-- Foca Monstruosa -->
-	{#each seals as seal}
-		<div
-			class="seal"
-			style="
-				left: {seal.x}px;
-				top: {seal.y}px;
-				transform: scaleX({seal.direction});
-			"
-		></div>
-	{/each}
+      <!-- Pinguim -->
+      <div
+        class="penguin"
+        class:hidden={gameOver}
+        style="left: {x}px; top: {y}px; transform: scaleX({facingLeft ? -1 : 1});">
+      </div>
 
-	<!-- Pinguim -->
-<div
-	class="penguin"
-	class:hidden={gameOver}
-	style="left: {x}px; top: {y}px; transform: scaleX({facingLeft ? -1 : 1});">
-</div>
+      <!-- Peixe -->
+      {#if showFish}
+        <div class="fish" style="left: {fishX}px; top: {fishY}px;"></div>
+      {/if}
 
-	<!-- Peixe -->
-	{#if showFish}
-		<div class="fish" style="left: {fishX}px; top: {fishY}px;"></div>
-	{/if}
+      <!-- Mensagem -->
+      {#if showMessage}
+        <div class="message">{message}</div>
+      {/if}
 
-	<!-- Mensagem -->
-	{#if showMessage}
-		<div class="message">{message}</div>
-	{/if}
+      <!-- Contador -->
+      <div class="counter">Peixes: {caughtCount}</div>
 
-	<!-- Contador -->
-	<div class="counter">Peixes: {caughtCount}</div>
-
-	
+    </div>
   </div>
 </div>
